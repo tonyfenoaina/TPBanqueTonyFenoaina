@@ -78,8 +78,8 @@ public class GestionnaireCompte {
         update(source);
         update(destination);
     }
-    
-       /**
+
+    /**
      * Méthode pour rechercher un compte bancaire à partir de son
      * idCompteBancaire
      *
@@ -89,7 +89,8 @@ public class GestionnaireCompte {
     public CompteBancaire findById(long idCompteBancaire) {
         return em.find(CompteBancaire.class, idCompteBancaire);
     }
-     /**
+
+    /**
      * Dépôt d'argent sur un compte bancaire.
      *
      * @param compteBancaire
@@ -112,6 +113,10 @@ public class GestionnaireCompte {
         compteBancaire.retirer(montant);
         update(compteBancaire);
     }
-    
+
+    @Transactional
+    public void supprimerCompte(CompteBancaire compte) {
+        em.remove(em.merge(compte));
+    }
 
 }

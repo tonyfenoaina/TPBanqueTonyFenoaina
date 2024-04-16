@@ -1,9 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:f="jakarta.faces.core"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:h="jakarta.faces.html">
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
 
     <body>
 
@@ -15,33 +16,59 @@
 
             <ui:define name="content">
                 <h:form>
-                    <h:dataTable value="#{compteBean.allCompteBancaires}"
-                                 var="item">
-                        <h:column>
+                    <p:dataTable 
+                        var="compte"
+                        value="#{listeComptes.allCompteBancaires}"
+                        paginator="true" rows="10"
+                        rowsPerPageTemplate="2,4,8,10"
+                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                        allowUnsorting="true" 
+                        emptyMessage="Aucun compte avec ce critère"
+                        widgetVar="compteTable"
+                        >
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <h:outputText value="Recherche dans tous les champs de recherche "/>
+                                <p:inputText id="globalFilter" onkeyup="PF('compteTable').filter()"
+                                             style="width:150px"/>
+                            </p:outputPanel>
+                        </f:facet>
+                        <p:column sortBy="#{compte.id}">
                             <f:facet name="header">
                                 <h:outputText value="Id"/>
                             </f:facet>
-                            <h:link outcome="mouvement?id=#{item.id}" 
-                                    value="#{item.id}"/>
-                           
-                        </h:column>
-                        <h:column>
-                            <f:facet name="header">
-                                <h:outputText value="Nom"/>
-                            </f:facet>
-                            <h:outputText value="#{item.nom}"/>
-                        </h:column>
+                            <h:link outcome="/mouvement?id=#{compte.id}" 
+                                    value="#{compte.id}"
+                                    />
+                        </p:column>
 
-                        <h:column>
+                        <p:column >
                             <f:facet name="header">
-                                <h:outputText value="Solde"/>
+                                <h:outputText value="Propríétaire"/>
                             </f:facet>
-                            <h:outputText value="#{item.solde}"/>
-                        </h:column>
-                    </h:dataTable>
+                            <h:outputText value="#{compte.nom}"/>
+                        </p:column>
+                        <p:column  >
+                            <f:facet name="header">
+                                <h:outputText value="Solde du compte"/>
+                            </f:facet>
+                            <h:outputText value="#{compte.solde}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Opérations"/>
+                            </f:facet>
+                            <h:commandLink action="#{listeComptes.supprimerCompte(compte)}"
+                                           title="Supprimer le compte de #{compte.nom}" >
+                                <h:graphicImage name="images/del.png"/>
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
                 </h:form>
                 <h:messages/>
             </ui:define>
+
         </ui:composition>
+
     </body>
 </html>
