@@ -18,7 +18,6 @@ import mg.tfenoaina.tpbanquetonyfenoaina.entities.CompteBancaire;
  *
  * @author info5
  */
-
 @DataSourceDefinition(
         className = "com.mysql.cj.jdbc.MysqlDataSource",
         name = "java:app/jdbc/banque",
@@ -36,7 +35,7 @@ import mg.tfenoaina.tpbanquetonyfenoaina.entities.CompteBancaire;
 
 @ApplicationScoped
 public class GestionnaireCompte {
-    
+
     @PersistenceContext(unitName = "banquePU")
     private EntityManager em;
 
@@ -50,8 +49,8 @@ public class GestionnaireCompte {
     public void creerCompte(CompteBancaire compteBancaire) {
         em.persist(compteBancaire);
     }
-    
-     /**
+
+    /**
      * Méthode pour récuperer la liste des comptes bancaires.
      *
      * @return
@@ -60,10 +59,35 @@ public class GestionnaireCompte {
         TypedQuery<CompteBancaire> query = em.createNamedQuery("CompteBancaire.findAll", CompteBancaire.class);
         return query.getResultList();
     }
-    
-        public Long nbComptes() {
-            Query query = em.createQuery("SELECT count(c) FROM CompteBancaire c");
+
+    public Long nbComptes() {
+        Query query = em.createQuery("SELECT count(c) FROM CompteBancaire c");
         return (long) query.getSingleResult();
     }
+
+    @Transactional
+    public CompteBancaire update(CompteBancaire compteBancaire) {
+        return em.merge(compteBancaire);
+    }
+
+    @Transactional
+    public void transferer(CompteBancaire source, CompteBancaire destination,
+            int montant) {
+        source.retirer(montant);
+        destination.deposer(montant);
+        update(source);
+        update(destination);
+    }
     
+       /**
+     * Méthode pour rechercher un compte bancaire à partir de son
+     * idCompteBancaire
+     *
+     * @param idCompteBancaire
+     * @return
+     */
+    public CompteBancaire findById(long idCompteBancaire) {
+        return em.find(CompteBancaire.class, idCompteBancaire);
+    }
+
 }
