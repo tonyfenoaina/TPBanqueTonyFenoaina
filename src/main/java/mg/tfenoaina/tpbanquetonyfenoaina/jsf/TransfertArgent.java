@@ -9,6 +9,7 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import java.io.Serializable;
 import mg.tfenoaina.tpbanquetonyfenoaina.entities.CompteBancaire;
+import mg.tfenoaina.tpbanquetonyfenoaina.jsf.util.Util;
 import mg.tfenoaina.tpbanquetonyfenoaina.service.GestionnaireCompte;
 
 /**
@@ -54,12 +55,46 @@ public class TransfertArgent implements Serializable {
         this.montant = montant;
     }
 
-    public String transferer() {
+      public String transferer() {
+        boolean erreur = false;
         CompteBancaire source = gestionnaireCompte.findById(idSource);
+        if (source == null) {
+            // Message d'erreur associé au composant source ; form:source est l'id client
+            // si l'id du formulaire est "form" et l'id du champ de saisie de l'id de la source est "source"
+            // dans la page JSF qui lance le transfert.
+            Util.messageErreur("Aucun compte avec cet idSource !", "Aucun compte avec cet idSource !", "form:source");
+            erreur = true;
+        } else {
+            if (source.getSolde() < montant) {
+                Util.messageErreur("Le solde du compte source n'est pas suffisant !", "Le solde du compte source n'est pas suffisant !", "form:montant");
+                erreur = true;
+            }
+        }
+
         CompteBancaire destination = gestionnaireCompte.findById(idDestination);
+        if (destination == null) {
+            // Message d'erreur associé au composant destination ; form:destination est l'id client
+            // si l'id du formulaire est "form" et l'id du champ de saisie de l'id de la destination est "destination"
+            // dans la page JSF qui lance le transfert.
+            Util.messageErreur("Aucun compte avec cet idDestination!", "Aucun compte avec cet idDestination !", "form:destination");
+            erreur = true;
+        }
+
+        if (montant <= 0) {
+            // Message d'erreur associé au composant montant ; form:montant est le montant
+            // si l'id du formulaire est "form" et l'id du champ de saisie de montant est "montant"
+            // dans la page JSF qui lance le transfert.
+            Util.messageErreur("Veuillez insérez un montant positif !", "Veuillez insérez un montant positif !", "form:montant");
+            erreur = true;
+        }
+
+        if (erreur) { // en cas d'erreur, rester sur la même page
+            return null;
+        }
+
         gestionnaireCompte.transferer(source, destination, montant);
+         Util.addFlashInfoMessage("Transfert de "+montant+" Ar depuis "+source.getNom()+" vers "+destination.getNom()+" correctement effectué!");
         return "listeComptes?faces-redirect=true";
-        
     }
 
 }
