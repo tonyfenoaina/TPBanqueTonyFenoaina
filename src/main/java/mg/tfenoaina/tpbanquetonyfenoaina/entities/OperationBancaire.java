@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 /**
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
  * @author info5
  */
 @Entity
+@Table(name = "operationbancaire")
 public class OperationBancaire implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -62,6 +64,32 @@ public class OperationBancaire implements Serializable {
         this.montant = montant;
         dateOperation = LocalDateTime.now();
     }
-    
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getDateOperation() {
+        return dateOperation;
+    }
+
+    public void setDateOperation(LocalDateTime dateOperation) {
+        this.dateOperation = dateOperation;
+    }
+
+    public int getMontant() {
+        return montant;
+    }
+
+    public void setMontant(int montant) {
+        this.montant = montant;
+    }
+
+    public OperationBancaire() {
+    }
     
 }
